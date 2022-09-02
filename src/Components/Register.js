@@ -1,6 +1,39 @@
-import React, { useContext } from 'react'
-
+import React, { useContext, useState } from 'react'
+import Validate from '../Validators/Registervalidator'
+import { useInvocasync } from '../Hooks/useAsync'
+import { register } from '../Features/Apis/posts'
+import { useNavigate } from "react-router-dom";
 const Register = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    comfirm_password: ''
+  })
+  const [formError, setFormError] = useState({})
+  const [termandservice, setTermandservice] = useState(false)
+  const { loading, error, value, executer } = useInvocasync(() => register(formData), [formData])
+
+
+  const formDataonChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+    console.log(formData)
+  }
+
+  const formDataonSubmit = (e) => {
+    e.preventDefault()
+    setFormError(Validate(formData))
+
+    console.log("error:", formError)
+    if (Object.keys(formError).length === 0 && termandservice) {
+      executer()
+      if (!error) {
+
+      }
+    }
+  }
+
 
 
 
@@ -21,44 +54,17 @@ const Register = () => {
                         <div className="d-flex flex-row align-items-center mb-4">
                           <i className="fa fa-user fa-lg me-3 fa-fw"></i>
                           <div className="form-outline flex-fill mb-0">
-                            {/* {data.Registerpage_error !== {} ? data.Registerpage_error.status === 400 ? "first_name" in data.Registerpage_error.error ?
-                              <small classNames="form-text text-muted text-danger">{data.Registerpage_error.error.first_name[0]}</small>
-                              : null : null : null} */}
-                            <input type="text" id="firstname" className="form-control" name='first_name' required />
-                            <label className="form-label" for="form3Example1c">First name</label>
+                            <span class="text-danger small fw-bold">{formError?.name}</span>
+                            <input type="text" id="firstname" className="form-control" name='name' required onChange={formDataonChange} />
+                            <label className="form-label" for="form3Example1c">Full name</label>
                           </div>
-                        </div>
-
-                        <div className="d-flex flex-row align-items-center mb-4">
-                          <i className="fa fa-user fa-lg me-3 fa-fw"></i>
-                          <div className="form-outline flex-fill mb-0">
-                            {/* {data.Registerpage_error !== {} ? data.Registerpage_error.status === 400 ? "last_name" in data.Registerpage_error.error ?
-                              <small classNames="form-text text-muted text-danger">{data.Registerpage_error.error.last_name[0]}</small>
-                              : null : null : null} */}
-                            <input type="text" id="lastname" className="form-control" name='last_name' required />
-                            <label className="form-label" for="form3Example1c">Last name</label>
-                          </div>
-                        </div>
-
-                        <div className="d-flex flex-row align-items-center mb-4">
-                          <i className="fa fa-at fa-lg me-3 fa-fw"></i>
-                          <div className="form-outline flex-fill mb-0">
-                            {/* {data.Registerpage_error !== {} ? data.Registerpage_error.status === 400 ? "username" in data.Registerpage_error.error ?
-                              <small classNames="form-text text-muted text-danger">{data.Registerpage_error.error.username[0]}</small>
-                              : null : null : null} */}
-                            <input type="text" id="username" className="form-control" name='username' required />
-                            <label className="form-label" for="form3Example1c">username</label>
-                          </div>
-
                         </div>
 
                         <div className="d-flex flex-row align-items-center mb-4">
                           <i className="fa fa-envelope fa-lg me-3 fa-fw"></i>
                           <div className="form-outline flex-fill mb-0">
-                            {/* {data.Registerpage_error !== {} ? data.Registerpage_error.status === 400 ? "email" in data.Registerpage_error.error ?
-                              <small classNames="form-text text-muted text-danger">{data.Registerpage_error.error.email[0]}</small>
-                              : null : null : null} */}
-                            <input type="email" id="form3Example3c" className="form-control" name='email' required />
+                            <span class="text-danger small fw-bold">{formError?.email}</span>
+                            <input type="email" id="form3Example3c" className="form-control" name='email' required onChange={formDataonChange} />
                             <label className="form-label" for="form3Example3c">Your Email</label>
                           </div>
                         </div>
@@ -66,11 +72,8 @@ const Register = () => {
                         <div className="d-flex flex-row align-items-center mb-4">
                           <i className="fa fa-lock fa-lg me-3 fa-fw"></i>
                           <div className="form-outline flex-fill mb-0">
-                            {/* {data.Registerpage_error !== {} ? data.Registerpage_error.status === 400 ? "password" in data.Registerpage_error.error ?
-                              data.Registerpage_error.error.password.map((error, index) =>
-                                <small key={index} classNames="form-text text-muted text-danger">{error}</small>
-                              ) : null : null : null} */}
-                            <input type="password" id="form3Example4c" className="form-control" autoComplete="on" name='password' required />
+                            <span class="text-danger small fw-bold">{formError?.password}</span>
+                            <input type="password" id="form3Example4c" className="form-control" autoComplete="on" name='password' required onChange={formDataonChange} />
                             <label className="form-label" for="form3Example4c">Password</label>
                           </div>
                         </div>
@@ -78,7 +81,8 @@ const Register = () => {
                         <div className="d-flex flex-row align-items-center mb-4">
                           <i className="fa fa-key fa-lg me-3 fa-fw"></i>
                           <div className="form-outline flex-fill mb-0">
-                            <input type="password" id="form3Example4cd" className="form-control" autoComplete="on" name='password2' required />
+                            <span class="text-danger small fw-bold">{formError?.comfirm_password}</span>
+                            <input type="password" id="form3Example4cd" className="form-control" autoComplete="on" name='comfirm_password' required onChange={formDataonChange} />
                             <label className="form-label" for="form3Example4cd">Repeat your password</label>
                           </div>
                         </div>
@@ -88,7 +92,7 @@ const Register = () => {
                             className="form-check-input me-2"
                             type="checkbox"
                             id="form2Example3c"
-
+                            onChange={() => setTermandservice(!termandservice)}
                             required
                           />
                           <label className="form-check-label" for="form2Example3">
@@ -99,15 +103,13 @@ const Register = () => {
 
 
                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                          <button type="Submit" className="btn btn-primary btn-lg">Register</button>
+                          <button type="Submit" className="btn btn-primary btn-lg" onClick={formDataonSubmit}>Register</button>
                         </div>
                       </form>
 
                     </div>
                     <div className="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-
                       <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp" className="img-fluid" alt="Sample image" />
-
                     </div>
                   </div>
                 </div>

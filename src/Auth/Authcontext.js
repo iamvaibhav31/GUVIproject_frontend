@@ -1,44 +1,45 @@
-import React, { createContext, useMemo } from "react";
-import { getPostdetails } from '../services/posts'
-import { useAsync } from '../Hooks/useAsync'
+import React, { createContext, useState } from "react";
+import Axios from "../Features/Apis/Axios";
 
 
 const Context = createContext();
 export default Context
 
 export const Provider = ({ children }) => {
-
-     var commentbyParentTd = []
-
-
-     function PostDetail(id) {
-          const { loading, error, value } = useAsync(() => getPostdetails(id), [id])
+     const [data, setData] = useState()
+     const [loading, setLoading] = useState()
+     const [error, setError] = useState()
 
 
-          commentbyParentTd = useMemo(() => {
-               const groups = {}
-               if (value?.comments == null) return []
-               value.comments.forEach(comment => {
-                    groups[comment.parentId] ||= []
-                    groups[comment.parentId].push(comment)
-               })
+     const RegisterUsers = async (data) => {
+          await Axios.post('/login', data).then(() => {
 
-               console.log(groups)
-               return groups
-          }, [value?.comments])
+          }).catch(() => {
+
+          }).finally(() => {
+
+          })
 
           return { loading, error, value }
      }
 
 
-     function getReplies(parentId) {
-          return commentbyParentTd[parentId]
+     const LoginUsers = async (data) => {
+          await Axios.post('/login', data).then(() => {
+
+          }).catch(() => {
+
+          }).finally(() => {
+
+          })
+
+          return { loading, error, value }
      }
 
 
      const value = {
-          postDetails: PostDetail,
-          getReplies,
+          RegisterUsers,
+          LoginUsers,
      }
 
      return (
@@ -47,3 +48,4 @@ export const Provider = ({ children }) => {
           </Context.Provider>
      );
 };
+
