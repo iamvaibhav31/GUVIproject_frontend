@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import Validate from '../Validators/Loginvalidator'
-import { login } from '../Features/Apis/posts'
-import { useInvocasync } from '../Hooks/useAsync'
+import AuthContext from '../Auth/AuthContext'
 
 const Login = () => {
+
+  const { LoginUsers, loading, error, userdata } = useContext(AuthContext)
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -12,7 +13,7 @@ const Login = () => {
   })
   const [formError, setFormError] = useState({})
   const [rememberme, setRememberMe] = useState(false)
-  const { loading, error, value, executer } = useInvocasync(() => login(formData), [formData])
+  const [isError, setIsError] = useState(false)
 
   const formDataonChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -22,23 +23,22 @@ const Login = () => {
   const formDataonSubmit = (e) => {
     e.preventDefault()
     setFormError(Validate(formData))
-    console.log("error:", formError)
+
     if (Object.keys(formError).length === 0 && rememberme) {
-      executer()
+      LoginUsers(formData)
       if (!error) {
-        localStorage.setItem("authTokens", JSON.stringify(value?.data?.token))
+        localStorage.setItem("authTokens", userdata?.data?.token)
+        localStorage.setItem("authID", userdata?.data?.id)
         navigate({
-          pathname: `/${value.data.id}`,
+          pathname: '/',
         });
+      } else {
+        setIsError(true);
       }
     }
   }
-  console.log(loading, error, value)
+  console.log(loading, error, userdata, isError)
 
-  // navigate({
-  //   pathname: "/search",
-  //   search: "?s=" + search,
-  // });
   return (
     <>
       <section className="vh-100 m-5">
@@ -47,8 +47,15 @@ const Login = () => {
             <div className="col-md-9 col-lg-6 col-xl-5">
               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" className="img-fluid" alt="Sample image" />
             </div>
+
             <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-              <form  >
+
+              {isError && <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span class="text-danger small fw-bold">{error}</span>
+                <button type="button" class="btn-close" onClick={(e) => setIsError(false)} ></button>
+              </div>}
+
+              <form>
                 <div className="form-outline mb-4">
                   <span class="text-danger small fw-bold">{formError?.email}</span>
                   <input type="Email" id="form3Example3" className="form-control form-control-lg"
@@ -79,6 +86,9 @@ const Login = () => {
 
                 <div className="text-center text-lg-start mt-4 pt-2">
                   <button type="Submit" className="btn btn-primary btn-lg" style={{ paddingleft: "2.5rem", paddingright: "2.5rem" }} onClick={formDataonSubmit}>Login</button>
+                  {loading && <div class="spinner-border m-2 " role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>}
                   <p className="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <Link to={"/register"}
                     className="link-danger">Register</Link></p>
                 </div>

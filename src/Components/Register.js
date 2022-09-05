@@ -1,10 +1,11 @@
 import React, { useContext, useState } from 'react'
 import Validate from '../Validators/Registervalidator'
-import { useInvocasync } from '../Hooks/useAsync'
-import { register } from '../Features/Apis/posts'
 import { useNavigate } from "react-router-dom";
+import AuthContext from '../Auth/AuthContext'
+
 const Register = () => {
   const navigate = useNavigate();
+  const { RegisterUsers, loading, error, userdata } = useContext(AuthContext)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,7 +14,7 @@ const Register = () => {
   })
   const [formError, setFormError] = useState({})
   const [termandservice, setTermandservice] = useState(false)
-  const { loading, error, value, executer } = useInvocasync(() => register(formData), [formData])
+  const [isError, setIsError] = useState(false)
 
 
   const formDataonChange = (e) => {
@@ -24,12 +25,14 @@ const Register = () => {
   const formDataonSubmit = (e) => {
     e.preventDefault()
     setFormError(Validate(formData))
-
-    console.log("error:", formError)
     if (Object.keys(formError).length === 0 && termandservice) {
-      executer()
+      RegisterUsers(formData)
       if (!error) {
-
+        navigate({
+          pathname: '/login',
+        });
+      } else {
+        setIsError(true);
       }
     }
   }
@@ -46,10 +49,14 @@ const Register = () => {
               <div className="card text-black" style={{ borderradius: "25px" }}>
                 <div className="card-body p-md-5">
                   <div className="row justify-content-center">
+
                     <div className="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
 
                       <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
-
+                      {isError && <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <span class="text-danger small fw-bold">{error}</span>
+                        <button type="button" class="btn-close" onClick={(e) => setIsError(false)} ></button>
+                      </div>}
                       <form className="mx-1 mx-md-4">
                         <div className="d-flex flex-row align-items-center mb-4">
                           <i className="fa fa-user fa-lg me-3 fa-fw"></i>
@@ -104,6 +111,9 @@ const Register = () => {
 
                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                           <button type="Submit" className="btn btn-primary btn-lg" onClick={formDataonSubmit}>Register</button>
+                          {loading && <div class="spinner-border m-2 " role="status">
+                            <span class="sr-only">Loading...</span>
+                          </div>}
                         </div>
                       </form>
 

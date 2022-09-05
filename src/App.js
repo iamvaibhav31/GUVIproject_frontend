@@ -4,28 +4,30 @@ import { Home, Login, Register, Pagenotfound } from './Pages/index'
 import Privatroutes from "./Helper/Privatroutes";
 import Navbar from './Components/Navbar'
 import Footer from './Components/Footer'
-
+import { Provider } from './Auth/AuthContext'
 
 function App() {
   return (
     <>
 
       <BrowserRouter>
+
         <Navbar />
+        <Provider>
+          <Routes>
 
-        <Routes>
+            <Route element={<Privatroutes />}>
+              <Route path="/" element={<Home />} />
+            </Route>
 
-          <Route element={<Privatroutes />}>
-            <Route path="/:id" element={<Home />} />
-          </Route>
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route element={<Pagenotfound />} />
+          </Routes>
 
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route element={<Pagenotfound />} />
-        </Routes>
-
-
+        </Provider>
         <Footer />
+
       </BrowserRouter>
 
     </>

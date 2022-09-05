@@ -1,45 +1,55 @@
 import React, { createContext, useState } from "react";
-import Axios from "../Features/Apis/Axios";
+import { Axios } from "../Helper/axios";
 
 
 const Context = createContext();
 export default Context
 
 export const Provider = ({ children }) => {
-     const [data, setData] = useState()
-     const [loading, setLoading] = useState()
+     const [userdata, setUserData] = useState()
+     const [loading, setLoading] = useState(false)
      const [error, setError] = useState()
 
 
-     const RegisterUsers = async (data) => {
-          await Axios.post('/login', data).then(() => {
-
-          }).catch(() => {
-
-          }).finally(() => {
-
-          })
-
-          return { loading, error, value }
-     }
 
 
      const LoginUsers = async (data) => {
-          await Axios.post('/login', data).then(() => {
-
-          }).catch(() => {
-
+          setLoading(true)
+          await Axios.post('/login', data).then((res) => {
+               setUserData(res.data)
+               setError(undefined)
+          }).catch((err) => {
+               setLoading(false)
+               setUserData(undefined)
+               setError(err.message)
           }).finally(() => {
-
+               setLoading(false)
           })
+     }
 
-          return { loading, error, value }
+
+     const RegisterUsers = async (data) => {
+
+          setLoading(true)
+          await Axios.post('/register', data).then((res) => {
+               setUserData(res.data)
+               setError(undefined)
+          }).catch((err) => {
+               setLoading(false)
+               setUserData(undefined)
+               setError(err.message)
+          }).finally(() => {
+               setLoading(false)
+          })
      }
 
 
      const value = {
           RegisterUsers,
           LoginUsers,
+          userdata,
+          loading,
+          error,
      }
 
      return (
