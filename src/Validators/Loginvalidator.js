@@ -9,12 +9,18 @@ const Validate = (values) => {
      } else if (!emailRegex.test(values.email)) {
           error.email = "Given Emailid is not valid"
      }
+     // else if (!emailRegex.test(values.email)) {
+     //      error.email = "Given Emailid is not valid"
+     // }
 
      if (!values.password) {
           error.password = "Pleace the Enter the password"
      } else if (!passwordRegex.test(values.password)) {
           error.password = "Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
      }
+     // else if (!passwordRegex.test(values.password)) {
+     //      error.password = "Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
+     // }
 
      return error
 }
